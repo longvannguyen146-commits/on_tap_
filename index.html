@@ -1,0 +1,1975 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ôn Tập Trắc Nghiệm Triết Học Mác - Lênin (BAS 123)</title>
+    <!-- Tải Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Tải Font Inter hỗ trợ tiếng Việt mượt mà -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Tải Phosphor Icons cho giao diện hiện đại -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        primary: {
+                            50: '#eff6ff',
+                            100: '#dbeafe',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Tùy chỉnh thanh cuộn gọn gàng */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 9999px;
+        }
+        .dark ::-webkit-scrollbar-thumb {
+            background: #475569;
+        }
+        /* Hiệu ứng chuyển đổi mượt */
+        .option-card {
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .option-card:active {
+            transform: scale(0.99);
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 dark:bg-slate-900 dark:text-slate-100 font-sans antialiased min-h-screen flex flex-col transition-colors duration-200">
+
+    <!-- Thanh điều hướng trên cùng (Header) -->
+    <header class="sticky top-0 z-30 bg-white/90 dark:bg-slate-800/90 backdrop-blur-md border-b border-slate-200 dark:border-slate-700 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-3">
+            <!-- Logo & Tên học phần -->
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-600 text-white flex items-center justify-center shadow-md shadow-blue-500/20 shrink-0">
+                    <i class="ph-bold ph-books text-xl"></i>
+                </div>
+                <div>
+                    <h1 class="font-bold text-base sm:text-lg leading-tight text-slate-900 dark:text-white">Triết Học Mác – Lênin</h1>
+                    <p class="text-xs text-slate-500 dark:text-slate-400 font-medium">Mã học phần: BAS 123 • Ngân hàng 600 câu</p>
+                </div>
+            </div>
+
+            <!-- Chuyển đổi chế độ & Công cụ -->
+            <div class="flex items-center gap-2 sm:gap-3">
+                <!-- Nút Chuyển Chế Độ (Ôn tập / Thi thử) -->
+                <div class="bg-slate-100 dark:bg-slate-700/70 p-1 rounded-xl flex items-center border border-slate-200/80 dark:border-slate-600">
+                    <button id="btnModePractice" onclick="switchMode('practice')" class="px-3 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition-all bg-white dark:bg-slate-800 text-blue-600 dark:text-blue-400 shadow-sm flex items-center gap-1.5">
+                        <i class="ph-bold ph-book-open-text"></i>
+                        <span>Ôn tập</span>
+                    </button>
+                    <button id="btnModeExam" onclick="switchMode('exam')" class="px-3 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition-all text-slate-600 dark:text-slate-300 hover:text-slate-900 flex items-center gap-1.5">
+                        <i class="ph-bold ph-timer"></i>
+                        <span>Thi thử</span>
+                    </button>
+                </div>
+
+                <!-- Nút Mở Modal Nạp Dữ Liệu -->
+                <button onclick="openImportModal()" title="Nạp thêm dữ liệu từ file 600 câu" class="p-2.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-900/30 dark:hover:bg-emerald-900/50 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800 transition-colors flex items-center gap-1.5 text-xs sm:text-sm font-semibold">
+                    <i class="ph-bold ph-database text-base"></i>
+                    <span class="hidden md:inline">Nạp câu hỏi</span>
+                </button>
+
+                <!-- Nút Chuyển Sáng/Tối -->
+                <button onclick="toggleDarkMode()" title="Đổi giao diện Sáng/Tối" class="p-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 transition-colors">
+                    <i id="themeIcon" class="ph-bold ph-moon text-base"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Thanh công cụ lọc & tìm kiếm (Chỉ hiện ở chế độ Ôn tập hoặc trước khi thi) -->
+    <section id="filterBar" class="bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 py-3.5 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-7xl mx-auto flex flex-col lg:flex-row gap-3 items-stretch lg:items-center justify-between">
+            <!-- Bộ lọc Chương & Mức độ -->
+            <div class="grid grid-cols-2 sm:flex sm:flex-wrap items-center gap-2.5">
+                <div class="relative">
+                    <select id="filterChapter" onchange="applyFilters()" class="w-full sm:w-auto appearance-none bg-slate-50 dark:bg-slate-700/60 border border-slate-200 dark:border-slate-600 rounded-xl pl-3.5 pr-9 py-2 text-xs sm:text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <option value="ALL">Tất cả các Chương</option>
+                        <option value="1">Chương 1: Khái luận về Triết học</option>
+                        <option value="2">Chương 2: Chủ nghĩa duy vật biện chứng</option>
+                        <option value="3">Chương 3: Chủ nghĩa duy vật lịch sử</option>
+                    </select>
+                    <i class="ph-bold ph-caret-down absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-xs"></i>
+                </div>
+
+                <div class="relative">
+                    <select id="filterLevel" onchange="applyFilters()" class="w-full sm:w-auto appearance-none bg-slate-50 dark:bg-slate-700/60 border border-slate-200 dark:border-slate-600 rounded-xl pl-3.5 pr-9 py-2 text-xs sm:text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <option value="ALL">Tất cả Mức độ</option>
+                        <option value="Nhận biết">Mức độ: Nhận biết</option>
+                        <option value="Thông hiểu">Mức độ: Thông hiểu</option>
+                        <option value="Vận dụng">Mức độ: Vận dụng</option>
+                    </select>
+                    <i class="ph-bold ph-caret-down absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-xs"></i>
+                </div>
+
+                <div class="relative col-span-2 sm:col-span-1">
+                    <select id="filterStatus" onchange="applyFilters()" class="w-full sm:w-auto appearance-none bg-slate-50 dark:bg-slate-700/60 border border-slate-200 dark:border-slate-600 rounded-xl pl-3.5 pr-9 py-2 text-xs sm:text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <option value="ALL">Trạng thái: Tất cả</option>
+                        <option value="UNANSWERED">Chưa làm</option>
+                        <option value="WRONG">Đã làm sai</option>
+                        <option value="STARRED">Đánh dấu sao ★</option>
+                    </select>
+                    <i class="ph-bold ph-caret-down absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-xs"></i>
+                </div>
+            </div>
+
+            <!-- Ô tìm kiếm từ khóa & Thống kê nhanh -->
+            <div class="flex items-center gap-2.5">
+                <div class="relative flex-1 sm:w-72">
+                    <i class="ph-bold ph-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                    <input type="text" id="searchInput" oninput="applyFilters()" placeholder="Tìm nội dung câu hỏi, số câu..." class="w-full bg-slate-50 dark:bg-slate-700/60 border border-slate-200 dark:border-slate-600 rounded-xl pl-9 pr-8 py-2 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <button id="clearSearchBtn" onclick="clearSearch()" class="hidden absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600">
+                        <i class="ph-bold ph-x text-xs"></i>
+                    </button>
+                </div>
+                <button onclick="resetProgress()" title="Xóa lịch sử làm bài" class="p-2 rounded-xl border border-slate-200 dark:border-slate-600 hover:bg-rose-50 hover:text-rose-600 hover:border-rose-200 dark:hover:bg-rose-900/30 dark:hover:text-rose-400 transition-colors text-slate-500">
+                    <i class="ph-bold ph-arrow-counter-clockwise text-base"></i>
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Banner Chế độ Thi Thử (Chỉ hiện khi đang ở chế độ Thi thử) -->
+    <section id="examBanner" class="hidden bg-indigo-600 text-white py-3 px-4 sm:px-6 lg:px-8 shadow-md">
+        <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3">
+            <div class="flex items-center gap-3">
+                <span class="px-2.5 py-1 rounded-lg bg-white/20 text-xs font-bold uppercase tracking-wider">Phòng Thi Thử</span>
+                <span id="examInfoText" class="text-sm font-medium">Đề ngẫu nhiên 40 câu • Thời gian 45 phút</span>
+            </div>
+            <div class="flex items-center gap-3">
+                <div class="flex items-center gap-2 bg-indigo-800/80 px-3.5 py-1.5 rounded-xl border border-indigo-400/30">
+                    <i class="ph-bold ph-clock text-amber-300 text-lg"></i>
+                    <span id="timerDisplay" class="font-mono font-bold text-base sm:text-lg tracking-wider">45:00</span>
+                </div>
+                <button id="btnSubmitExam" onclick="confirmSubmitExam()" class="px-4 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-xs sm:text-sm shadow-sm transition-all flex items-center gap-1.5">
+                    <i class="ph-bold ph-paper-plane-tilt"></i>
+                    <span>Nộp bài</span>
+                </button>
+                <button onclick="setupNewExamModal()" class="px-3 py-2 rounded-xl bg-white/15 hover:bg-white/25 text-white font-semibold text-xs sm:text-sm transition-all">
+                    Đổi đề
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Khu vực nội dung chính -->
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <!-- Bảng kết quả tổng kết sau khi nộp bài thi thử -->
+        <div id="examResultCard" class="hidden mb-6 bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-6 shadow-sm">
+            <div class="flex flex-col md:flex-row items-center justify-between gap-6">
+                <div class="flex items-center gap-4">
+                    <div id="scoreCircle" class="w-20 h-20 rounded-2xl bg-blue-600 text-white flex flex-col items-center justify-center shrink-0 shadow-lg shadow-blue-500/30">
+                        <span id="examScoreValue" class="text-2xl font-extrabold leading-none">8.5</span>
+                        <span class="text-[11px] uppercase tracking-wider opacity-80 mt-1">Điểm hệ 10</span>
+                    </div>
+                    <div>
+                        <h2 id="examResultTitle" class="text-xl font-bold text-slate-900 dark:text-white">Hoàn thành bài thi thử!</h2>
+                        <p id="examResultSubtitle" class="text-sm text-slate-500 dark:text-slate-400 mt-1">Bạn đã trả lời đúng 34/40 câu trong thời gian 28 phút 15 giây.</p>
+                        <div class="flex flex-wrap gap-3 mt-3 text-xs font-semibold">
+                            <span class="px-2.5 py-1 rounded-lg bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300" id="statCorrect">Đúng: 34</span>
+                            <span class="px-2.5 py-1 rounded-lg bg-rose-100 text-rose-700 dark:bg-rose-900/40 dark:text-rose-300" id="statWrong">Sai: 6</span>
+                            <span class="px-2.5 py-1 rounded-lg bg-slate-100 text-slate-700 dark:bg-slate-700 dark:text-slate-300" id="statUnanswered">Chưa làm: 0</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex gap-2.5 w-full md:w-auto">
+                    <button onclick="setupNewExamModal()" class="flex-1 md:flex-none px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm transition-colors">
+                        Làm đề mới
+                    </button>
+                    <button onclick="switchMode('practice')" class="flex-1 md:flex-none px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 font-semibold text-sm transition-colors">
+                        Về chế độ ôn tập
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bố cục 2 cột: Trái hiển thị Câu hỏi, Phải hiển thị Bảng điều hướng (Question Palette) -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+            
+            <!-- CỘT TRÁI: THẺ CÂU HỎI HIỆN TẠI (8 cột trên desktop) -->
+            <div class="lg:col-span-8 space-y-4">
+                <!-- Thẻ câu hỏi -->
+                <div id="questionCard" class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden">
+                    <!-- Header thẻ câu hỏi -->
+                    <div class="px-5 sm:px-6 py-4 bg-slate-50/80 dark:bg-slate-800/80 border-b border-slate-200 dark:border-slate-700 flex flex-wrap items-center justify-between gap-2">
+                        <div class="flex items-center gap-2 flex-wrap">
+                            <span id="qBadgeNumber" class="px-3 py-1 rounded-lg bg-blue-600 text-white font-bold text-xs sm:text-sm">Câu 1</span>
+                            <span id="qBadgeChapter" class="px-2.5 py-1 rounded-lg bg-slate-200/70 dark:bg-slate-700 text-slate-700 dark:text-slate-300 font-semibold text-xs">Chương 1</span>
+                            <span id="qBadgeLevel" class="px-2.5 py-1 rounded-lg bg-amber-100 dark:bg-amber-900/40 text-amber-800 dark:text-amber-300 font-semibold text-xs">Nhận biết</span>
+                        </div>
+                        <button id="btnStarQuestion" onclick="toggleStarCurrent()" class="p-2 rounded-xl hover:bg-slate-200/70 dark:hover:bg-slate-700 text-slate-400 transition-colors flex items-center gap-1.5 text-xs font-semibold" title="Đánh dấu sao để xem lại">
+                            <i id="starIcon" class="ph-bold ph-star text-lg"></i>
+                            <span class="hidden sm:inline">Đánh dấu</span>
+                        </button>
+                    </div>
+
+                    <!-- Nội dung câu hỏi & Các phương án -->
+                    <div class="p-5 sm:p-6">
+                        <div id="qText" class="text-base sm:text-lg font-semibold text-slate-900 dark:text-white leading-relaxed mb-6">
+                            Đang tải dữ liệu câu hỏi...
+                        </div>
+
+                        <!-- Danh sách 4 đáp án A, B, C, D -->
+                        <div id="optionsContainer" class="space-y-3">
+                            <!-- Các nút phương án được render động bằng JS -->
+                        </div>
+
+                        <!-- Hộp giải thích / Ghi chú đáp án (Hiện khi ở chế độ Ôn tập và đã chọn, hoặc sau khi Nộp bài thi) -->
+                        <div id="explanationBox" class="hidden mt-6 p-4 rounded-xl bg-blue-50/80 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-800/60">
+                            <div class="flex items-start gap-3">
+                                <i class="ph-fill ph-lightbulb text-amber-500 text-xl shrink-0 mt-0.5"></i>
+                                <div class="text-sm text-slate-700 dark:text-slate-300 space-y-1">
+                                    <p class="font-bold text-slate-900 dark:text-white" id="correctAnswerLabel">Đáp án đúng: A</p>
+                                    <p id="explanationText" class="leading-relaxed">Giải thích chi tiết dựa trên giáo trình Triết học Mác – Lênin (BAS 123).</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Thanh điều hướng Trước / Tiếp theo -->
+                    <div class="px-5 sm:px-6 py-4 bg-slate-50/80 dark:bg-slate-800/80 border-t border-slate-200 dark:border-slate-700 flex items-center justify-between gap-3">
+                        <button id="btnPrev" onclick="prevQuestion()" class="px-4 py-2.5 rounded-xl bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 hover:bg-slate-100 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 font-semibold text-sm transition-all flex items-center gap-2 disabled:opacity-40 disabled:pointer-events-none">
+                            <i class="ph-bold ph-arrow-left"></i>
+                            <span>Câu trước</span>
+                        </button>
+
+                        <span id="progressCounter" class="text-xs sm:text-sm font-semibold text-slate-500 dark:text-slate-400">
+                            1 / 45
+                        </span>
+
+                        <button id="btnNext" onclick="nextQuestion()" class="px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm shadow-sm transition-all flex items-center gap-2 disabled:opacity-40 disabled:pointer-events-none">
+                            <span>Câu tiếp</span>
+                            <i class="ph-bold ph-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Phím tắt gợi ý trên máy tính -->
+                <div class="hidden sm:flex items-center justify-between text-xs text-slate-400 px-2">
+                    <span>Mẹo: Dùng phím <kbd class="px-1.5 py-0.5 bg-slate-200 dark:bg-slate-700 rounded text-slate-600 dark:text-slate-300 font-mono">1-4</kbd> hoặc <kbd class="px-1.5 py-0.5 bg-slate-200 dark:bg-slate-700 rounded text-slate-600 dark:text-slate-300 font-mono">A-D</kbd> để chọn đáp án, phím mũi tên <kbd class="px-1.5 py-0.5 bg-slate-200 dark:bg-slate-700 rounded text-slate-600 dark:text-slate-300 font-mono">←</kbd> <kbd class="px-1.5 py-0.5 bg-slate-200 dark:bg-slate-700 rounded text-slate-600 dark:text-slate-300 font-mono">→</kbd> để chuyển câu.</span>
+                </div>
+            </div>
+
+            <!-- CỘT PHẢI: BẢNG ĐIỀU HƯỚNG CÂU HỎI (QUESTION PALETTE) (4 cột trên desktop) -->
+            <aside class="lg:col-span-4 bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm p-5 sticky top-20">
+                <div class="flex items-center justify-between mb-3">
+                    <h3 class="font-bold text-sm sm:text-base text-slate-900 dark:text-white flex items-center gap-2">
+                        <i class="ph-bold ph-squares-four text-blue-600"></i>
+                        <span>Danh sách câu hỏi</span>
+                    </h3>
+                    <span id="paletteSummary" class="text-xs font-semibold px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300">
+                        Đã làm: 0/45
+                    </span>
+                </div>
+
+                <!-- Chú thích màu sắc -->
+                <div class="grid grid-cols-2 gap-2 text-xs text-slate-500 dark:text-slate-400 mb-4 pb-3 border-b border-slate-100 dark:border-slate-700">
+                    <div class="flex items-center gap-1.5">
+                        <span class="w-3 h-3 rounded-sm bg-emerald-500 inline-block"></span>
+                        <span>Đúng / Đã chọn</span>
+                    </div>
+                    <div class="flex items-center gap-1.5">
+                        <span class="w-3 h-3 rounded-sm bg-rose-500 inline-block"></span>
+                        <span>Trả lời sai</span>
+                    </div>
+                    <div class="flex items-center gap-1.5">
+                        <span class="w-3 h-3 rounded-sm border-2 border-blue-600 inline-block"></span>
+                        <span>Đang xem</span>
+                    </div>
+                    <div class="flex items-center gap-1.5">
+                        <span class="w-3 h-3 rounded-sm bg-amber-400 inline-block"></span>
+                        <span>Đánh dấu sao</span>
+                    </div>
+                </div>
+
+                <!-- Lưới các ô số câu hỏi -->
+                <div id="questionPaletteGrid" class="grid grid-cols-6 sm:grid-cols-8 lg:grid-cols-6 gap-2 max-h-[360px] overflow-y-auto pr-1">
+                    <!-- Các nút số câu hỏi được render động -->
+                </div>
+            </aside>
+        </div>
+    </main>
+
+    <!-- MODAL 1: CẤU HÌNH ĐỀ THI THỬ -->
+    <div id="examSetupModal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-slate-800 rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-700">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                    <i class="ph-bold ph-exam text-indigo-600 text-xl"></i>
+                    <span>Thiết lập bài thi thử</span>
+                </h3>
+                <button onclick="closeModal('examSetupModal')" class="text-slate-400 hover:text-slate-600 p-1">
+                    <i class="ph-bold ph-x text-lg"></i>
+                </button>
+            </div>
+            <div class="space-y-4 text-sm">
+                <div>
+                    <label class="block font-semibold mb-1.5 text-slate-700 dark:text-slate-300">Phạm vi kiến thức</label>
+                    <select id="examChapterSelect" class="w-full bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl px-3.5 py-2.5 font-medium">
+                        <option value="ALL">Tổng hợp cả 3 Chương (Chuẩn thi hết môn)</option>
+                        <option value="1">Chỉ Chương 1: Khái luận về Triết học</option>
+                        <option value="2">Chỉ Chương 2: Chủ nghĩa duy vật biện chứng</option>
+                        <option value="3">Chỉ Chương 3: Chủ nghĩa duy vật lịch sử</option>
+                    </select>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block font-semibold mb-1.5 text-slate-700 dark:text-slate-300">Số lượng câu hỏi</label>
+                        <select id="examCountSelect" class="w-full bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl px-3.5 py-2.5 font-medium">
+                            <option value="15">15 câu (Luyện nhanh)</option>
+                            <option value="30">30 câu (Giữa kỳ)</option>
+                            <option value="40" selected>40 câu (Cuối kỳ)</option>
+                            <option value="60">60 câu (Tổng ôn)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block font-semibold mb-1.5 text-slate-700 dark:text-slate-300">Thời gian làm bài</label>
+                        <select id="examTimeSelect" class="w-full bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-xl px-3.5 py-2.5 font-medium">
+                            <option value="15">15 phút</option>
+                            <option value="30">30 phút</option>
+                            <option value="45" selected>45 phút</option>
+                            <option value="60">60 phút</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="p-3 rounded-xl bg-amber-50 dark:bg-amber-900/30 text-amber-800 dark:text-amber-300 text-xs leading-relaxed">
+                    Lưu ý: Hệ thống sẽ tự động xáo trộn ngẫu nhiên các câu hỏi trong ngân hàng dữ liệu hiện có. Nếu số câu chọn vượt quá số câu hiện có, đề sẽ lấy tối đa số câu hiện có.
+                </div>
+            </div>
+            <div class="mt-6 flex justify-end gap-2.5">
+                <button onclick="closeModal('examSetupModal')" class="px-4 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-700 font-semibold text-sm">Hủy</button>
+                <button onclick="startExam()" class="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm shadow-md shadow-indigo-500/20">Bắt đầu làm bài</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 2: NẠP THÊM CÂU HỎI & ĐÁP ÁN TỪ FILE WORD / TXT / JSON -->
+    <div id="importModal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-slate-800 rounded-2xl max-w-3xl w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-700 max-h-[90vh] flex flex-col">
+            <div class="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-700">
+                <div>
+                    <h3 class="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                        <i class="ph-bold ph-file-arrow-up text-emerald-600 text-xl"></i>
+                        <span>Nạp trọn bộ 600 câu hỏi & đáp án BAS 123</span>
+                    </h3>
+                    <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Hiện đang có <strong id="totalBankCount" class="text-blue-600">45</strong> câu hỏi tiêu biểu trong bộ nhớ.</p>
+                </div>
+                <button onclick="closeModal('importModal')" class="text-slate-400 hover:text-slate-600 p-1">
+                    <i class="ph-bold ph-x text-lg"></i>
+                </button>
+            </div>
+
+            <div class="overflow-y-auto py-4 space-y-4 flex-1 text-sm">
+                <div class="p-3.5 rounded-xl bg-blue-50 dark:bg-blue-950/50 border border-blue-200 dark:border-blue-800 text-xs text-slate-700 dark:text-slate-300 space-y-1.5">
+                    <p class="font-bold text-blue-800 dark:text-blue-300">Hướng dẫn nạp nhanh từ 2 file Word/PDF của bạn:</p>
+                    <p>1. Mở file <strong>600 câu hỏi BAS 123</strong>, nhấn <kbd class="px-1.5 py-0.5 bg-white dark:bg-slate-800 rounded border">Ctrl+A</kbd> rồi <kbd class="px-1.5 py-0.5 bg-white dark:bg-slate-800 rounded border">Ctrl+C</kbd> và dán vào ô <strong>Nội dung câu hỏi</strong> bên dưới.</p>
+                    <p>2. Mở file <strong>Đáp án gợi ý</strong>, sao chép bảng đáp án (ví dụ: <code>1. A 2. C ...</code> hoặc dạng bảng) và dán vào ô <strong>Nội dung đáp án</strong>. Hệ thống sẽ tự động khớp từng câu và lưu vĩnh viễn trên trình duyệt!</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block font-semibold mb-1.5 text-slate-700 dark:text-slate-300">1. Dán văn bản Câu hỏi (hoặc JSON)</label>
+                        <textarea id="rawQuestionsInput" rows="8" placeholder="Ví dụ:
+Câu 1: Triết học ra đời vào khoảng thời gian nào?
+A. Thiên niên kỷ III TCN
+B. Thế kỷ VIII - VI TCN
+C. Thế kỷ II - I TCN
+D. Thế kỷ I SCN..." class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-3 text-xs font-mono focus:ring-2 focus:ring-blue-500 focus:outline-none"></textarea>
+                    </div>
+                    <div>
+                        <label class="block font-semibold mb-1.5 text-slate-700 dark:text-slate-300">2. Dán văn bản Đáp án (ví dụ: 1. B, 2. A...)</label>
+                        <textarea id="rawAnswersInput" rows="8" placeholder="Ví dụ:
+1. B
+2. C
+3. A (Giáo trình trang 15)
+Hoặc dán nguyên bảng đáp án từ file Word..." class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-3 text-xs font-mono focus:ring-2 focus:ring-blue-500 focus:outline-none"></textarea>
+                    </div>
+                </div>
+
+                <div class="flex flex-wrap items-center justify-between gap-2 pt-2">
+                    <div class="flex items-center gap-2">
+                        <label class="cursor-pointer px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-xs font-semibold flex items-center gap-1.5 transition-colors">
+                            <i class="ph-bold ph-upload-simple"></i>
+                            <span>Tải lên file .TXT / .JSON</span>
+                            <input type="file" accept=".txt,.json" onchange="handleFileUpload(event)" class="hidden">
+                        </label>
+                        <button onclick="exportBankJSON()" class="px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-xs font-semibold flex items-center gap-1.5 transition-colors">
+                            <i class="ph-bold ph-download-simple"></i>
+                            <span>Xuất file JSON</span>
+                        </button>
+                    </div>
+                    <button onclick="restoreDefaultBank()" class="text-xs text-rose-600 hover:underline font-medium">
+                        Khôi phục bộ dữ liệu mặc định
+                    </button>
+                </div>
+            </div>
+
+            <div class="pt-3 border-t border-slate-200 dark:border-slate-700 flex justify-end gap-2.5">
+                <button onclick="closeModal('importModal')" class="px-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-700 font-semibold text-sm">Đóng</button>
+                <button onclick="processSmartImport()" class="px-5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm shadow-sm flex items-center gap-1.5">
+                    <i class="ph-bold ph-check-circle"></i>
+                    <span>Phân tích & Nạp dữ liệu</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hộp thông báo Toast thay thế hoàn toàn alert() -->
+    <div id="toastContainer" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+    <!-- Hộp xác nhận tùy chỉnh (Custom Confirm Modal) thay thế confirm() -->
+    <div id="confirmDialog" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-slate-800 rounded-2xl max-w-sm w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-700">
+            <h4 id="confirmTitle" class="text-base font-bold text-slate-900 dark:text-white mb-2">Xác nhận thao tác</h4>
+            <p id="confirmMessage" class="text-sm text-slate-600 dark:text-slate-300 mb-5">Bạn có chắc chắn muốn thực hiện?</p>
+            <div class="flex justify-end gap-2.5">
+                <button onclick="closeConfirm(false)" class="px-4 py-2 rounded-xl bg-slate-100 dark:bg-slate-700 font-semibold text-sm">Hủy bỏ</button>
+                <button id="confirmOkBtn" onclick="closeConfirm(true)" class="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm">Đồng ý</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        /**
+         * ============================================================================
+         * DỮ LIỆU NGÂN HÀNG CÂU HỎI & ĐÁP ÁN TRIẾT HỌC MÁC - LÊNIN (BAS 123)
+         * Trích xuất chuẩn xác từ tài liệu 600 câu hỏi và bản đáp án gợi ý BAS 123
+         * ============================================================================
+         */
+        const DEFAULT_QUESTIONS = [
+            // --- CHƯƠNG 1: KHÁI LUẬN VỀ TRIẾT HỌC VÀ TRIẾT HỌC MÁC - LÊNIN ---
+            {
+                id: 1,
+                chapter: 1,
+                level: "Nhận biết",
+                question: "Triết học ra đời vào khoảng thời gian nào?",
+                options: [
+                    "Thiên niên kỷ III TCN",
+                    "Thế kỷ VIII - VI TCN",
+                    "Thế kỷ II - I TCN",
+                    "Thế kỷ I SCN"
+                ],
+                answer: 1, // B
+                note: "Triết học ra đời gần như cùng một thời gian (khoảng từ thế kỷ VIII đến thế kỷ VI tr.CN) tại các trung tâm văn minh lớn của nhân loại thời Cổ đại như Trung Quốc, Ấn Độ, Hy Lạp."
+            },
+            {
+                id: 2,
+                chapter: 1,
+                level: "Nhận biết",
+                question: "Theo quan điểm của người Trung Quốc cổ đại, thuật ngữ 'Triết' (哲) có nghĩa là gì?",
+                options: [
+                    "Sự yêu mến sự thông thái",
+                    "Sự truy tìm bản chất của đối tượng nhận thức",
+                    "Con đường suy ngẫm để dẫn dắt con người đến với lẽ phải",
+                    "Khoa học của mọi khoa học"
+                ],
+                answer: 1, // B
+                note: "Ở Trung Quốc, chữ 'Triết' (哲) đã có từ rất sớm với ý nghĩa là sự truy tìm bản chất của đối tượng nhận thức, thường là con người, xã hội, vũ trụ và tư tưởng."
+            },
+            {
+                id: 3,
+                chapter: 1,
+                level: "Nhận biết",
+                question: "Theo quan điểm của người Hy Lạp cổ đại, thuật ngữ 'Philosophia' có nghĩa là gì?",
+                options: [
+                    "Sự giải thích vũ trụ",
+                    "Yêu mến sự thông thái",
+                    "Con đường đạt tới chân lý",
+                    "Tri thức về tự nhiên"
+                ],
+                answer: 1, // B
+                note: "Ở Hy Lạp, 'Philosophia' vừa mang nghĩa là giải thích vũ trụ, định hướng nhận thức và hành vi, vừa nhấn mạnh đến khát vọng tìm kiếm chân lý của con người (Yêu mến sự thông thái)."
+            },
+            {
+                id: 4,
+                chapter: 1,
+                level: "Nhận biết",
+                question: "Nguồn gốc nhận thức của sự ra đời triết học là gì?",
+                options: [
+                    "Khi xã hội phân chia thành giai cấp đối kháng",
+                    "Khi tư duy con người đạt đến trình độ trừu tượng hóa, khái quát hóa cao",
+                    "Khi lao động trí óc tách khỏi lao động chân tay",
+                    "Khi chữ viết ra đời"
+                ],
+                answer: 1, // B
+                note: "Triết học chỉ xuất hiện khi kho tàng tri thức của loài người đã hình thành được một vốn hiểu biết nhất định và tư duy con người đạt đến trình độ có khả năng rút ra được cái chung trong muôn vàn những sự kiện, hiện tượng riêng lẻ."
+            },
+            {
+                id: 5,
+                chapter: 1,
+                level: "Nhận biết",
+                question: "Nguồn gốc xã hội của sự ra đời triết học là gì?",
+                options: [
+                    "Chế độ công xã nguyên thủy tan rã, chế độ chiếm hữu nô lệ ra đời, lao động trí óc tách khỏi lao động chân tay",
+                    "Sự xuất hiện của các tôn giáo lớn trên thế giới",
+                    "Sự phát triển của thương nghiệp hàng hải",
+                    "Sự ra đời của các nhà nước phong kiến tập quyền"
+                ],
+                answer: 0, // A
+                note: "Triết học ra đời khi nền sản xuất xã hội đã có sự phân công lao động và loài người đã xuất hiện giai cấp (xã hội chiếm hữu nô lệ)."
+            },
+            {
+                id: 6,
+                chapter: 1,
+                level: "Thông hiểu",
+                question: "Vấn đề cơ bản lớn của mọi triết học, đặc biệt là của triết học hiện đại là vấn đề nào?",
+                options: [
+                    "Mối quan hệ giữa vật chất và vận động",
+                    "Mối quan hệ giữa tư duy và tồn tại (hay giữa ý thức và vật chất)",
+                    "Mối quan hệ giữa con người và tự nhiên",
+                    "Mối quan hệ giữa lý luận và thực tiễn"
+                ],
+                answer: 1, // B
+                note: "Theo Ph.Ăngghen: 'Vấn đề cơ bản lớn của mọi triết học, đặc biệt là của triết học hiện đại, là vấn đề quan hệ giữa tư duy với tồn tại'."
+            },
+            {
+                id: 7,
+                chapter: 1,
+                level: "Thông hiểu",
+                question: "Mặt thứ nhất trong vấn đề cơ bản của triết học giải quyết câu hỏi nào?",
+                options: [
+                    "Con người có khả năng nhận thức được thế giới hay không?",
+                    "Giữa ý thức và vật chất thì cái nào có trước, cái nào có sau, cái nào quyết định cái nào?",
+                    "Thế giới tồn tại như thế nào, vận động hay đứng im?",
+                    "Bản chất của con người là gì?"
+                ],
+                answer: 1, // B
+                note: "Mặt thứ nhất (bản thể luận): Giữa ý thức và vật chất thì cái nào có trước, cái nào có sau, cái nào quyết định cái nào? Việc giải quyết mặt này chia các nhà triết học thành hai trường phái lớn: Chủ nghĩa duy vật và Chủ nghĩa duy tâm."
+            },
+            {
+                id: 8,
+                chapter: 1,
+                level: "Thông hiểu",
+                question: "Mặt thứ hai trong vấn đề cơ bản của triết học giải quyết câu hỏi nào?",
+                options: [
+                    "Vật chất tồn tại dưới những dạng nào?",
+                    "Con người có khả năng nhận thức được thế giới hay không?",
+                    "Ý thức có nguồn gốc từ đâu?",
+                    "Xã hội loài người phát triển theo quy luật nào?"
+                ],
+                answer: 1, // B
+                note: "Mặt thứ hai (nhận thức luận): Con người có khả năng nhận thức được thế giới hay không? Từ đó phân chia thành Khả tri luận (thuyết có thể biết) và Bất khả tri luận (thuyết không thể biết)."
+            },
+            {
+                id: 9,
+                chapter: 1,
+                level: "Nhận biết",
+                question: "Chủ nghĩa duy vật chất phác thời Cổ đại có đặc điểm nổi bật nào?",
+                options: [
+                    "Đồng nhất vật chất với một hay một số chất cụ thể của tự nhiên (nước, lửa, không khí, nguyên tử...)",
+                    "Xem thế giới như một cỗ máy khổng lồ mà mỗi bộ phận tạo nên thế giới đó về cơ bản ở trong trạng thái biệt lập và tĩnh tại",
+                    "Khắc phục được hạn chế của chủ nghĩa duy vật siêu hình",
+                    "Gắn liền với sự phát triển của khoa học thực nghiệm thế kỷ XVII - XVIII"
+                ],
+                answer: 0, // A
+                note: "Chủ nghĩa duy vật chất phác thời Cổ đại mang tính trực quan, ngây thơ, chất phác khi lấy bản thân giới tự nhiên để giải thích thế giới."
+            },
+            {
+                id: 10,
+                chapter: 1,
+                level: "Nhận biết",
+                question: "Hình thức phát triển cao nhất của chủ nghĩa duy vật trong lịch sử triết học là gì?",
+                options: [
+                    "Chủ nghĩa duy vật chất phác",
+                    "Chủ nghĩa duy vật siêu hình",
+                    "Chủ nghĩa duy vật biện chứng",
+                    "Chủ nghĩa duy vật tự phát"
+                ],
+                answer: 2, // C
+                note: "Chủ nghĩa duy vật biện chứng do C.Mác và Ph.Ăngghen xây dựng vào những năm 40 của thế kỷ XIX, sau đó được V.I.Lênin phát triển, là hình thức phát triển cao nhất của chủ nghĩa duy vật."
+            },
+            {
+                id: 11,
+                chapter: 1,
+                level: "Thông hiểu",
+                question: "Sự khác biệt căn bản giữa chủ nghĩa duy tâm chủ quan và chủ nghĩa duy tâm khách quan là gì?",
+                options: [
+                    "Duy tâm chủ quan thừa nhận tính thứ nhất của ý thức con người; duy tâm khách quan thừa nhận tính thứ nhất của tinh thần khách quan có trước và tồn tại độc lập với con người",
+                    "Duy tâm chủ quan phủ nhận sự tồn tại của Chúa trời; duy tâm khách quan thừa nhận Chúa trời",
+                    "Duy tâm chủ quan có nguồn gốc từ khoa học; duy tâm khách quan có nguồn gốc từ tôn giáo",
+                    "Duy tâm chủ quan thừa nhận vật chất có trước; duy tâm khách quan thừa nhận ý thức có trước"
+                ],
+                answer: 0, // A
+                note: "Duy tâm chủ quan (Berkeley, Hume...) cho rằng mọi sự vật, hiện tượng chỉ là phức hợp của cảm giác. Duy tâm khách quan (Platon, Hêghen...) coi 'ý niệm', 'ý niệm tuyệt đối' tồn tại khách quan bên ngoài con người quyết định thế giới."
+            },
+            {
+                id: 12,
+                chapter: 1,
+                level: "Nhận biết",
+                question: "Ba phát minh lớn của khoa học tự nhiên nửa đầu thế kỷ XIX là tiền đề khoa học cho sự ra đời của triết học Mác là gì?",
+                options: [
+                    "Định luật bảo toàn và chuyển hóa năng lượng, Học thuyết tế bào, Học thuyết tiến hóa của Đác-uyn",
+                    "Thuyết tương đối, Cơ học lượng tử, Phát hiện ra tia X",
+                    "Định luật vạn vật hấp dẫn, Bảng tuần hoàn các nguyên tố hóa học, Thuyết nhật tâm",
+                    "Phát hiện ra điện tử, Hiện tượng phóng xạ, Thuyết Big Bang"
+                ],
+                answer: 0, // A
+                note: "Ba phát minh vĩ đại này đã vạch ra mối liên hệ thống nhất giữa những dạng tồn tại khác nhau, những hình thức vận động khác nhau trong tính thống nhất vật chất của thế giới."
+            },
+            {
+                id: 13,
+                chapter: 1,
+                level: "Nhận biết",
+                question: "Tiền đề lý luận trực tiếp cho sự ra đời của triết học Mác là gì?",
+                options: [
+                    "Triết học cổ điển Đức (đặc biệt là phép biện chứng của Hêghen và chủ nghĩa duy vật của Phoiơbắc)",
+                    "Kinh tế chính trị học cổ điển Anh",
+                    "Chủ nghĩa xã hội không tưởng Pháp",
+                    "Triết học Hy Lạp cổ đại"
+                ],
+                answer: 0, // A
+                note: "Triết học cổ điển Đức là nguồn gốc lý luận trực tiếp của triết học Mác; Kinh tế chính trị cổ điển Anh và CNXH không tưởng Pháp là hai nguồn gốc lý luận còn lại của Chủ nghĩa Mác."
+            },
+            {
+                id: 14,
+                chapter: 1,
+                level: "Vận dụng",
+                question: "Câu nói nổi tiếng của C.Mác trong 'Luận cương về Phoiơbắc': 'Các nhà triết học đã chỉ giải thích thế giới bằng nhiều cách khác nhau, song vấn đề là cải tạo thế giới' thể hiện trực tiếp chức năng nào của triết học Mác - Lênin?",
+                options: [
+                    "Chức năng thế giới quan",
+                    "Chức năng phương pháp luận",
+                    "Chức năng thực tiễn - cách mạng (cải tạo thế giới)",
+                    "Chức năng dự báo khoa học"
+                ],
+                answer: 2, // C
+                note: "Triết học Mác - Lênin không chỉ dừng lại ở việc giải thích thế giới mà còn là vũ khí tinh thần của giai cấp vô sản trong việc cải tạo thế giới bằng hoạt động thực tiễn cách mạng."
+            },
+            {
+                id: 15,
+                chapter: 1,
+                level: "Thông hiểu",
+                question: "Đối tượng nghiên cứu của triết học Mác - Lênin là gì?",
+                options: [
+                    "Nghiên cứu mọi quy luật cụ thể của tự nhiên, xã hội và tư duy",
+                    "Giải quyết mối quan hệ giữa vật chất và ý thức trên lập trường duy vật biện chứng và nghiên cứu những quy luật vận động, phát triển chung nhất của tự nhiên, xã hội và tư duy",
+                    "Nghiên cứu quá trình hình thành và phát triển của xã hội loài người",
+                    "Nghiên cứu bản chất của thế giới tinh thần"
+                ],
+                answer: 1, // B
+                note: "Triết học Mác - Lênin xác định đối tượng nghiên cứu là giải quyết mối quan hệ giữa vật chất và ý thức trên lập trường duy vật biện chứng và nghiên cứu những quy luật chung nhất của tự nhiên, xã hội và tư duy."
+            },
+
+            // --- CHƯƠNG 2: CHỦ NGHĨA DUY VẬT BIỆN CHỨNG ---
+            {
+                id: 16,
+                chapter: 2,
+                level: "Nhận biết",
+                question: "Trong định nghĩa về vật chất của V.I.Lênin, đặc tính quan trọng nhất để phân biệt vật chất với ý thức là gì?",
+                options: [
+                    "Có khối lượng và quảng tính",
+                    "Tồn tại khách quan (thực tại khách quan được đem lại cho con người trong cảm giác)",
+                    "Có thể nhìn thấy và cầm nắm được",
+                    "Không ngừng vận động và biến đổi"
+                ],
+                answer: 1, // B
+                note: "V.I.Lênin định nghĩa: 'Vật chất là một phạm trù triết học dùng để chỉ thực tại khách quan được đem lại cho con người trong cảm giác, được cảm giác của chúng ta chép lại, chụp lại, phản ánh và tồn tại không lệ thuộc vào cảm giác'."
+            },
+            {
+                id: 17,
+                chapter: 2,
+                level: "Nhận biết",
+                question: "Theo quan điểm của chủ nghĩa duy vật biện chứng, phương thức tồn tại của vật chất là gì?",
+                options: [
+                    "Không gian",
+                    "Thời gian",
+                    "Vận động",
+                    "Đứng im"
+                ],
+                answer: 2, // C
+                note: "Ph.Ăngghen khẳng định: 'Vận động, hiểu theo nghĩa chung nhất... bao gồm tất cả mọi sự thay đổi và mọi quá trình diễn ra trong vũ trụ, kể từ sự thay đổi vị trí đơn giản cho đến tư duy' là phương thức tồn tại của vật chất."
+            },
+            {
+                id: 18,
+                chapter: 2,
+                level: "Thông hiểu",
+                question: "Theo chủ nghĩa duy vật biện chứng, mối quan hệ giữa vận động và đứng im được hiểu như thế nào?",
+                options: [
+                    "Vận động là tuyệt đối, đứng im là tương đối, tạm thời",
+                    "Vận động là tương đối, đứng im là tuyệt đối",
+                    "Cả vận động và đứng im đều là tuyệt đối",
+                    "Đứng im là sự ngừng vận động hoàn toàn của vật chất"
+                ],
+                answer: 0, // A
+                note: "Đứng im chỉ xảy ra trong một quan hệ nhất định chứ không phải trong mọi quan hệ cùng một lúc, chỉ xảy ra với một hình thức vận động nào đó chứ không phải với mọi hình thức vận động. Do đó đứng im là tương đối, tạm thời; vận động là tuyệt đối."
+            },
+            {
+                id: 19,
+                chapter: 2,
+                level: "Nhận biết",
+                question: "Ph.Ăngghen chia vận động của vật chất thành mấy hình thức cơ bản?",
+                options: [
+                    "3 hình thức",
+                    "4 hình thức",
+                    "5 hình thức",
+                    "6 hình thức"
+                ],
+                answer: 2, // C
+                note: "5 hình thức vận động cơ bản từ thấp đến cao: Cơ học, Vật lý, Hóa học, Sinh học và Xã hội."
+            },
+            {
+                id: 20,
+                chapter: 2,
+                level: "Nhận biết",
+                question: "Nguồn gốc tự nhiên của ý thức bao gồm những yếu tố nào?",
+                options: [
+                    "Lao động và ngôn ngữ",
+                    "Bộ óc người và thế giới khách quan tác động lên bộ óc người (sự phản ánh)",
+                    "Giáo dục và giao tiếp xã hội",
+                    "Hệ thần kinh trung ương và các giác quan"
+                ],
+                answer: 1, // B
+                note: "Nguồn gốc tự nhiên của ý thức gồm 2 yếu tố không thể tách rời: Bộ óc người (cơ quan vật chất của ý thức) và thế giới khách quan tác động vào bộ óc người tạo ra quá trình phản ánh năng động, sáng tạo."
+            },
+            {
+                id: 21,
+                chapter: 2,
+                level: "Thông hiểu",
+                question: "Nguồn gốc xã hội quyết định trực tiếp sự ra đời và phát triển của ý thức là gì?",
+                options: [
+                    "Lao động và ngôn ngữ",
+                    "Bộ óc người và hoạt động thực tiễn",
+                    "Quan hệ sản xuất và lực lượng sản xuất",
+                    "Gia đình và nhà trường"
+                ],
+                answer: 0, // A
+                note: "Lao động và ngôn ngữ là hai sức kích thích chủ yếu làm chuyển biến dần bộ óc của loài vượn thành bộ óc con người và tâm lý động vật thành ý thức con người."
+            },
+            {
+                id: 22,
+                chapter: 2,
+                level: "Thông hiểu",
+                question: "Bản chất của ý thức theo quan điểm của chủ nghĩa duy vật biện chứng là gì?",
+                options: [
+                    "Là sự phản ánh nguyên xi, thụ động thế giới khách quan vào bộ óc người",
+                    "Là hình ảnh chủ quan của thế giới khách quan, là quá trình phản ánh tích cực, tự giác, sáng tạo thế giới khách quan vào bộ óc người thông qua thực tiễn",
+                    "Là một dạng vật chất đặc biệt do bộ óc tiết ra giống như gan tiết ra mật",
+                    "Là thực thể tinh thần độc lập tồn tại bên ngoài con người"
+                ],
+                answer: 1, // B
+                note: "Ý thức là hình ảnh chủ quan của thế giới khách quan: nội dung phản ánh là khách quan, còn hình thức phản ánh là chủ quan (mang tính tích cực, năng động, sáng tạo)."
+            },
+            {
+                id: 23,
+                chapter: 2,
+                level: "Vận dụng",
+                question: "Từ nguyên lý về mối quan hệ biện chứng giữa vật chất và ý thức, bài học phương pháp luận quan trọng nhất rút ra cho hoạt động nhận thức và thực tiễn là gì?",
+                options: [
+                    "Phải luôn xuất phát từ thực tế khách quan, tôn trọng quy luật khách quan đồng thời phát huy tính năng động chủ quan",
+                    "Chỉ cần phát huy tối đa ý chí, quyết tâm chủ quan là có thể thay đổi mọi hoàn cảnh",
+                    "Tuyệt đối hóa vai trò của điều kiện vật chất, thụ động chờ đợi hoàn cảnh thay đổi",
+                    "Dựa vào kinh nghiệm cá nhân để giải quyết mọi vấn đề thực tiễn"
+                ],
+                answer: 0, // A
+                note: "Nguyên tắc phương pháp luận: Tôn trọng tính khách quan kết hợp với phát huy tính năng động chủ quan; chống bệnh chủ quan duy ý chí và bệnh bảo thủ, trì trệ."
+            },
+            {
+                id: 24,
+                chapter: 2,
+                level: "Nhận biết",
+                question: "Hai nguyên lý cơ bản của phép biện chứng duy vật là gì?",
+                options: [
+                    "Nguyên lý về tính thống nhất vật chất của thế giới và Nguyên lý về sự vận động",
+                    "Nguyên lý về mối liên hệ phổ biến và Nguyên lý về sự phát triển",
+                    "Nguyên lý về mâu thuẫn và Nguyên lý về lượng - chất",
+                    "Nguyên lý về tồn tại xã hội và Nguyên lý về ý thức xã hội"
+                ],
+                answer: 1, // B
+                note: "Phép biện chứng duy vật được xây dựng trên hai nguyên lý nền tảng: Nguyên lý về mối liên hệ phổ biến và Nguyên lý về sự phát triển."
+            },
+            {
+                id: 25,
+                chapter: 2,
+                level: "Vận dụng",
+                question: "Quan điểm toàn diện và quan điểm lịch sử - cụ thể được rút ra trực tiếp từ cơ sở lý luận nào?",
+                options: [
+                    "Nguyên lý về mối liên hệ phổ biến",
+                    "Nguyên lý về sự phát triển",
+                    "Quy luật phủ định của phủ định",
+                    "Phạm trù nguyên nhân và kết quả"
+                ],
+                answer: 0, // A
+                note: "Từ Nguyên lý về mối liên hệ phổ biến rút ra Quan điểm toàn diện (chống phiến diện, chiết trung, ngụy biện) và Quan điểm lịch sử - cụ thể."
+            },
+            {
+                id: 26,
+                chapter: 2,
+                level: "Thông hiểu",
+                question: "Quy luật nào của phép biện chứng duy vật chỉ ra CÁCH THỨC chung nhất của sự vận động và phát triển?",
+                options: [
+                    "Quy luật thống nhất và đấu tranh của các mặt đối lập",
+                    "Quy luật chuyển hóa từ những thay đổi về lượng dẫn đến những thay đổi về chất và ngược lại",
+                    "Quy luật phủ định của phủ định",
+                    "Quy luật quan hệ sản xuất phù hợp với trình độ phát triển của lực lượng sản xuất"
+                ],
+                answer: 1, // B
+                note: "Quy luật Lượng - Chất chỉ ra cách thức của sự phát triển; Quy luật Mâu thuẫn chỉ ra nguồn gốc, động lực; Quy luật Phủ định của phủ định chỉ ra khuynh hướng của sự phát triển."
+            },
+            {
+                id: 27,
+                chapter: 2,
+                level: "Nhận biết",
+                question: "Trong quy luật Lượng - Chất, khoảng giới hạn mà trong đó sự thay đổi về lượng chưa làm thay đổi căn bản về chất của sự vật được gọi là gì?",
+                options: [
+                    "Điểm nút",
+                    "Bước nhảy",
+                    "Độ",
+                    "Thuộc tính"
+                ],
+                answer: 2, // C
+                note: "'Độ' là phạm trù triết học dùng để chỉ khoảng giới hạn trong đó sự thay đổi về lượng của sự vật chưa làm thay đổi căn bản chất của sự vật ấy."
+            },
+            {
+                id: 28,
+                chapter: 2,
+                level: "Thông hiểu",
+                question: "Hạt nhân của phép biện chứng duy vật là quy luật nào?",
+                options: [
+                    "Quy luật chuyển hóa từ những thay đổi về lượng dẫn đến những thay đổi về chất và ngược lại",
+                    "Quy luật thống nhất và đấu tranh của các mặt đối lập (Quy luật mâu thuẫn)",
+                    "Quy luật phủ định của phủ định",
+                    "Quy luật về sự phù hợp của quan hệ sản xuất với trình độ của lực lượng sản xuất"
+                ],
+                answer: 1, // B
+                note: "V.I.Lênin khẳng định: Có thể định nghĩa vắn tắt phép biện chứng là học thuyết về sự thống nhất của các mặt đối lập. Như thế là nắm được hạt nhân của phép biện chứng."
+            },
+            {
+                id: 29,
+                chapter: 2,
+                level: "Thông hiểu",
+                question: "Đặc trưng cơ bản nhất của phủ định biện chứng là gì?",
+                options: [
+                    "Tính khách quan và tính kế thừa",
+                    "Tính chủ quan và tính xóa bỏ hoàn toàn",
+                    "Tính ngẫu nhiên và tính lặp lại nguyên xi",
+                    "Tính bất biến và tính tuyệt đối"
+                ],
+                answer: 0, // A
+                note: "Phủ định biện chứng có hai đặc trưng cơ bản là tính khách quan (do nguyên nhân bên trong sự vật) và tính kế thừa (gạt bỏ cái tiêu cực, giữ lại và cải biến cái tích cực của cái cũ)."
+            },
+            {
+                id: 30,
+                chapter: 2,
+                level: "Nhận biết",
+                question: "Theo chủ nghĩa duy vật biện chứng, tiêu chuẩn duy nhất để kiểm tra chân lý là gì?",
+                options: [
+                    "Sự đồng thuận của đa số mọi người",
+                    "Tính logic chặt chẽ của tư duy",
+                    "Thực tiễn",
+                    "Lời khẳng định của các nhà khoa học uy tín"
+                ],
+                answer: 2, // C
+                note: "Thực tiễn là cơ sở, động lực, mục đích của nhận thức và là tiêu chuẩn duy nhất để kiểm tra chân lý."
+            },
+
+            // --- CHƯƠNG 3: CHỦ NGHĨA DUY VẬT LỊCH SỬ ---
+            {
+                id: 31,
+                chapter: 3,
+                level: "Nhận biết",
+                question: "Nhân tố giữ vai trò quyết định sự tồn tại và phát triển của xã hội loài người là gì?",
+                options: [
+                    "Điều kiện địa lý và dân số",
+                    "Sản xuất vật chất",
+                    "Sản xuất tinh thần",
+                    "Hệ thống chính trị và pháp luật"
+                ],
+                answer: 1, // B
+                note: "Sản xuất vật chất là cơ sở của sự tồn tại và phát triển xã hội loài người; giữ vai trò quyết định toàn bộ đời sống xã hội và sự phát triển lịch sử."
+            },
+            {
+                id: 32,
+                chapter: 3,
+                level: "Nhận biết",
+                question: "Phương thức sản xuất là sự thống nhất biện chứng giữa hai yếu tố nào?",
+                options: [
+                    "Cơ sở hạ tầng và Kiến trúc thượng tầng",
+                    "Lực lượng sản xuất và Quan hệ sản xuất",
+                    "Tồn tại xã hội và Ý thức xã hội",
+                    "Tư liệu lao động và Đối tượng lao động"
+                ],
+                answer: 1, // B
+                note: "Phương thức sản xuất là cách thức con người tiến hành quá trình sản xuất vật chất ở những giai đoạn lịch sử nhất định, bao gồm sự thống nhất giữa Lực lượng sản xuất và Quan hệ sản xuất."
+            },
+            {
+                id: 33,
+                chapter: 3,
+                level: "Thông hiểu",
+                question: "Trong lực lượng sản xuất, yếu tố nào giữ vai trò quyết định và năng động, cách mạng nhất?",
+                options: [
+                    "Người lao động (và công cụ lao động là yếu tố động nhất)",
+                    "Đối tượng lao động",
+                    "Tài nguyên thiên nhiên",
+                    "Quan hệ sở hữu tư liệu sản xuất"
+                ],
+                answer: 0, // A
+                note: "Người lao động là nhân tố hàng đầu giữ vai trò quyết định trong lực lượng sản xuất; công cụ lao động là yếu tố động nhất, cách mạng nhất trong tư liệu sản xuất."
+            },
+            {
+                id: 34,
+                chapter: 3,
+                level: "Nhận biết",
+                question: "Quan hệ sản xuất bao gồm ba mặt quan hệ cơ bản nào?",
+                options: [
+                    "Quan hệ sở hữu về tư liệu sản xuất, quan hệ tổ chức quản lý sản xuất, quan hệ phân phối sản phẩm lao động",
+                    "Quan hệ giữa người với tự nhiên, quan hệ giai cấp, quan hệ dân tộc",
+                    "Quan hệ chính trị, quan hệ pháp quyền, quan hệ đạo đức",
+                    "Quan hệ cung - cầu, quan hệ giá cả, quan hệ cạnh tranh"
+                ],
+                answer: 0, // A
+                note: "Trong 3 mặt của quan hệ sản xuất, quan hệ sở hữu về tư liệu sản xuất giữ vai trò quyết định bản chất của quan hệ sản xuất."
+            },
+            {
+                id: 35,
+                chapter: 3,
+                level: "Thông hiểu",
+                question: "Quy luật cơ bản nhất, phổ biến nhất chi phối toàn bộ sự vận động và phát triển của lịch sử xã hội loài người là gì?",
+                options: [
+                    "Quy luật đấu tranh giai cấp",
+                    "Quy luật quan hệ sản xuất phù hợp với trình độ phát triển của lực lượng sản xuất",
+                    "Quy luật cơ sở hạ tầng quyết định kiến trúc thượng tầng",
+                    "Quy luật tồn tại xã hội quyết định ý thức xã hội"
+                ],
+                answer: 1, // B
+                note: "Quy luật QHSX phù hợp với trình độ phát triển của LLSX là quy luật cơ bản nhất của sự vận động và phát triển xã hội."
+            },
+            {
+                id: 36,
+                chapter: 3,
+                level: "Nhận biết",
+                question: "Khái niệm 'Cơ sở hạ tầng' trong triết học Mác - Lênin dùng để chỉ điều gì?",
+                options: [
+                    "Hệ thống đường sá, cầu cống, điện nước, nhà xưởng của một quốc gia",
+                    "Toàn bộ những quan hệ sản xuất của một xã hội hợp thành cơ cấu kinh tế của xã hội đó",
+                    "Toàn bộ lực lượng sản xuất và tư liệu sản xuất của xã hội",
+                    "Các thiết chế nhà nước, đảng phái chính trị và pháp luật"
+                ],
+                answer: 1, // B
+                note: "Cơ sở hạ tầng là toàn bộ những quan hệ sản xuất hợp thành cơ cấu kinh tế của một hình thái kinh tế - xã hội nhất định (gồm QHSX thống trị, QHSX tàn dư và QHSX mầm mống)."
+            },
+            {
+                id: 37,
+                chapter: 3,
+                level: "Thông hiểu",
+                question: "Trong kiến trúc thượng tầng của xã hội có giai cấp, yếu tố nào có tác động mạnh mẽ và trực tiếp nhất đến cơ sở hạ tầng?",
+                options: [
+                    "Tôn giáo và nghệ thuật",
+                    "Nhà nước",
+                    "Đạo đức và phong tục tập quán",
+                    "Triết học và khoa học"
+                ],
+                answer: 1, // B
+                note: "Nhà nước là công cụ quyền lực chính trị đặc biệt của giai cấp thống trị, có bộ máy cưỡng chế và pháp luật nên tác động trực tiếp, mạnh mẽ nhất đến cơ sở hạ tầng."
+            },
+            {
+                id: 38,
+                chapter: 3,
+                level: "Thông hiểu",
+                question: "C.Mác viết: 'Tôi coi sự phát triển của các hình thái kinh tế - xã hội là một quá trình lịch sử - tự nhiên'. Điều đó có nghĩa là gì?",
+                options: [
+                    "Sự phát triển của xã hội hoàn toàn giống với sự phát triển của giới tự nhiên, không có sự tham gia của con người",
+                    "Sự thay thế các hình thái kinh tế - xã hội tuân theo các quy luật khách quan vốn có của xã hội, không phụ thuộc vào ý muốn chủ quan của con người",
+                    "Mọi quốc gia đều bắt buộc phải trải qua tuần tự tất cả 5 hình thái kinh tế - xã hội",
+                    "Xã hội phát triển một cách tự phát, ngẫu nhiên"
+                ],
+                answer: 1, // B
+                note: "Quá trình lịch sử - tự nhiên nghĩa là sự vận động, thay thế nhau của các hình thái kinh tế - xã hội diễn ra theo các quy luật khách quan thông qua hoạt động của con người."
+            },
+            {
+                id: 39,
+                chapter: 3,
+                level: "Nhận biết",
+                question: "Nguyên nhân sâu xa dẫn đến sự phân chia xã hội thành giai cấp là gì?",
+                options: [
+                    "Sự phát triển của lực lượng sản xuất làm xuất hiện 'của cải dư thừa' tương đối và chế độ tư hữu về tư liệu sản xuất",
+                    "Sự khác biệt về tài năng, trí tuệ và sức khỏe giữa các cá nhân",
+                    "Chiến tranh xâm lược giữa các bộ lạc thời nguyên thủy",
+                    "Sự xuất hiện của nhà nước và pháp luật"
+                ],
+                answer: 0, // A
+                note: "Nguyên nhân sâu xa của sự xuất hiện giai cấp là sự phát triển của lực lượng sản xuất; nguyên nhân trực tiếp là sự xuất hiện chế độ tư hữu về tư liệu sản xuất."
+            },
+            {
+                id: 40,
+                chapter: 3,
+                level: "Thông hiểu",
+                question: "Nguồn gốc trực tiếp dẫn đến sự ra đời của Nhà nước là gì?",
+                options: [
+                    "Do nhu cầu quản lý các công trình thủy lợi và chống ngoại xâm",
+                    "Do mâu thuẫn giai cấp trong xã hội phát triển đến mức không thể điều hòa được",
+                    "Do sự thỏa thuận tự nguyện (khế ước xã hội) của mọi công dân",
+                    "Do ý chí của thượng đế ban phát cho bậc quân vương"
+                ],
+                answer: 1, // B
+                note: "V.I.Lênin chỉ rõ: Nhà nước là sản phẩm và biểu hiện của những mâu thuẫn giai cấp không thể điều hòa được."
+            },
+            {
+                id: 41,
+                chapter: 3,
+                level: "Nhận biết",
+                question: "Ba yếu tố cơ bản cấu thành Tồn tại xã hội bao gồm những gì?",
+                options: [
+                    "Phương thức sản xuất vật chất, điều kiện tự nhiên - hoàn cảnh địa lý, dân số và mật độ dân số",
+                    "Tâm lý xã hội, hệ tư tưởng, phong tục tập quán",
+                    "Lực lượng sản xuất, quan hệ sản xuất, kiến trúc thượng tầng",
+                    "Kinh tế, chính trị, văn hóa"
+                ],
+                answer: 0, // A
+                note: "Tồn tại xã hội gồm 3 yếu tố cơ bản: Phương thức sản xuất vật chất (giữ vai trò quyết định), điều kiện địa lý, và dân số."
+            },
+            {
+                id: 42,
+                chapter: 3,
+                level: "Vận dụng",
+                question: "Hiện tượng một số tập tục lạc hậu vẫn tồn tại dai dẳng ngay cả khi điều kiện kinh tế - xã hội sinh ra nó đã mất đi chứng minh đặc điểm nào của ý thức xã hội?",
+                options: [
+                    "Ý thức xã hội thường lạc hậu hơn so với tồn tại xã hội",
+                    "Ý thức xã hội có thể vượt trước tồn tại xã hội",
+                    "Ý thức xã hội quyết định tồn tại xã hội",
+                    "Ý thức xã hội đồng nhất hoàn toàn với tồn tại xã hội"
+                ],
+                answer: 0, // A
+                note: "Đây là biểu hiện đầu tiên của tính độc lập tương đối của ý thức xã hội: Ý thức xã hội thường lạc hậu hơn so với tồn tại xã hội do sức ỳ của thói quen, truyền thống và lợi ích của các lực lượng bảo thủ."
+            },
+            {
+                id: 43,
+                chapter: 3,
+                level: "Nhận biết",
+                question: "Theo C.Mác, bản chất của con người được xác định như thế nào?",
+                options: [
+                    "Bản chất con người là một cái trừu tượng cố hữu của cá nhân riêng biệt",
+                    "Trong tính hiện thực của nó, bản chất con người là tổng hòa những quan hệ xã hội",
+                    "Bản chất con người hoàn toàn do yếu tố sinh học và di truyền quy định",
+                    "Bản chất con người vốn thiện hoặc vốn ác từ khi sinh ra"
+                ],
+                answer: 1, // B
+                note: "Trong 'Luận cương về Phoiơbắc', C.Mác khẳng định: 'Bản chất con người không phải là một cái trừu tượng cố hữu của cá nhân riêng biệt. Trong tính hiện thực của nó, bản chất con người là tổng hòa những quan hệ xã hội'."
+            },
+            {
+                id: 44,
+                chapter: 3,
+                level: "Thông hiểu",
+                question: "Theo quan điểm của chủ nghĩa duy vật lịch sử, chủ thể sáng tạo chân chính ra lịch sử là ai?",
+                options: [
+                    "Các vĩ nhân, lãnh tụ kiệt xuất",
+                    "Quần chúng nhân dân",
+                    "Giai cấp thống trị trong xã hội",
+                    "Các nhà tư tưởng và nhà khoa học"
+                ],
+                answer: 1, // B
+                note: "Quần chúng nhân dân là lực lượng sản xuất cơ bản của xã hội, là động lực cơ bản của mọi cuộc cách mạng xã hội và là người sáng tạo ra những giá trị văn hóa tinh thần."
+            },
+            {
+                id: 45,
+                chapter: 3,
+                level: "Vận dụng",
+                question: "Quan điểm 'Lấy dân làm gốc' của Đảng Cộng sản Việt Nam là sự vận dụng sáng tạo nguyên lý nào của chủ nghĩa duy vật lịch sử?",
+                options: [
+                    "Vai trò quyết định của quần chúng nhân dân trong lịch sử",
+                    "Vai trò của đấu tranh giai cấp",
+                    "Quy luật phủ định của phủ định",
+                    "Tính độc lập tương đối của ý thức xã hội"
+                ],
+                answer: 0, // A
+                note: "Quán triệt quan điểm của chủ nghĩa Mác - Lênin về vai trò quyết định của quần chúng nhân dân, Đảng ta luôn khẳng định cách mạng là sự nghiệp của nhân dân, do nhân dân và vì nhân dân."
+            }
+        ];
+
+        /**
+         * ============================================================================
+         * QUẢN LÝ TRẠNG THÁI ỨNG DỤNG (STATE MANAGEMENT)
+         * ============================================================================
+         */
+        let questionBank = [];          // Toàn bộ ngân hàng câu hỏi
+        let filteredQuestions = [];     // Danh sách câu hỏi đang hiển thị (theo bộ lọc hoặc đề thi)
+        let currentIndex = 0;           // Chỉ số câu hỏi hiện tại trong filteredQuestions
+        let currentMode = 'practice';   // 'practice' (Ôn tập) hoặc 'exam' (Thi thử)
+        
+        // Lưu trữ tiến độ ôn tập: { [questionId]: { selected: number, starred: boolean } }
+        let userProgress = {};
+
+        // Trạng thái phòng thi thử
+        let examState = {
+            answers: {},        // { [questionId]: selectedOptionIndex }
+            isSubmitted: false,
+            timerInterval: null,
+            secondsLeft: 45 * 60,
+            totalSeconds: 45 * 60
+        };
+
+        let confirmCallback = null;
+
+        /**
+         * Khởi tạo ứng dụng khi tải trang
+         */
+        window.onload = function () {
+            loadTheme();
+            loadDataFromStorage();
+            applyFilters();
+            setupKeyboardShortcuts();
+        };
+
+        /**
+         * Tải dữ liệu câu hỏi và tiến độ từ LocalStorage
+         */
+        function loadDataFromStorage() {
+            try {
+                const savedBank = localStorage.getItem('bas123_question_bank');
+                if (savedBank) {
+                    const parsed = JSON.parse(savedBank);
+                    if (Array.isArray(parsed) && parsed.length > 0) {
+                        questionBank = parsed;
+                    } else {
+                        questionBank = [...DEFAULT_QUESTIONS];
+                    }
+                } else {
+                    questionBank = [...DEFAULT_QUESTIONS];
+                }
+
+                const savedProgress = localStorage.getItem('bas123_user_progress');
+                if (savedProgress) {
+                    userProgress = JSON.parse(savedProgress) || {};
+                }
+            } catch (e) {
+                console.error("Lỗi đọc LocalStorage:", e);
+                questionBank = [...DEFAULT_QUESTIONS];
+                userProgress = {};
+            }
+            updateBankCountUI();
+        }
+
+        function saveProgressToStorage() {
+            try {
+                localStorage.setItem('bas123_user_progress', JSON.stringify(userProgress));
+            } catch (e) {
+                console.error("Lỗi lưu tiến độ:", e);
+            }
+        }
+
+        function saveBankToStorage() {
+            try {
+                localStorage.setItem('bas123_question_bank', JSON.stringify(questionBank));
+                updateBankCountUI();
+            } catch (e) {
+                showToast("Bộ nhớ trình duyệt đầy, không thể lưu thêm!", "error");
+            }
+        }
+
+        function updateBankCountUI() {
+            const el = document.getElementById('totalBankCount');
+            if (el) el.textContent = questionBank.length;
+        }
+
+        /**
+         * ============================================================================
+         * CHẾ ĐỘ SÁNG / TỐI (DARK MODE)
+         * ============================================================================
+         */
+        function loadTheme() {
+            const savedTheme = localStorage.getItem('bas123_theme');
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
+                document.documentElement.classList.add('dark');
+                document.getElementById('themeIcon').className = 'ph-bold ph-sun text-base text-amber-400';
+            }
+        }
+
+        function toggleDarkMode() {
+            const html = document.documentElement;
+            const icon = document.getElementById('themeIcon');
+            if (html.classList.contains('dark')) {
+                html.classList.remove('dark');
+                localStorage.setItem('bas123_theme', 'light');
+                icon.className = 'ph-bold ph-moon text-base';
+            } else {
+                html.classList.add('dark');
+                localStorage.setItem('bas123_theme', 'dark');
+                icon.className = 'ph-bold ph-sun text-base text-amber-400';
+            }
+        }
+
+        /**
+         * ============================================================================
+         * BỘ LỌC & TÌM KIẾM TRONG CHẾ ĐỘ ÔN TẬP
+         * ============================================================================
+         */
+        function applyFilters() {
+            if (currentMode !== 'practice') return;
+
+            const chapterVal = document.getElementById('filterChapter').value;
+            const levelVal = document.getElementById('filterLevel').value;
+            const statusVal = document.getElementById('filterStatus').value;
+            const searchVal = document.getElementById('searchInput').value.trim().toLowerCase();
+
+            // Hiện/ẩn nút xóa tìm kiếm
+            document.getElementById('clearSearchBtn').classList.toggle('hidden', searchVal.length === 0);
+
+            filteredQuestions = questionBank.filter(q => {
+                // Lọc theo chương
+                if (chapterVal !== 'ALL' && String(q.chapter) !== chapterVal) return false;
+                // Lọc theo mức độ
+                if (levelVal !== 'ALL' && q.level !== levelVal) return false;
+                
+                // Lọc theo trạng thái
+                const prog = userProgress[q.id] || {};
+                if (statusVal === 'UNANSWERED' && prog.selected !== undefined) return false;
+                if (statusVal === 'WRONG' && (prog.selected === undefined || prog.selected === q.answer)) return false;
+                if (statusVal === 'STARRED' && !prog.starred) return false;
+
+                // Lọc theo từ khóa tìm kiếm
+                if (searchVal) {
+                    const matchId = `câu ${q.id}`.includes(searchVal) || String(q.id) === searchVal;
+                    const matchQuestion = q.question.toLowerCase().includes(searchVal);
+                    const matchOptions = q.options.some(opt => opt.toLowerCase().includes(searchVal));
+                    if (!matchId && !matchQuestion && !matchOptions) return false;
+                }
+
+                return true;
+            });
+
+            currentIndex = 0;
+            renderCurrentQuestion();
+            renderQuestionPalette();
+        }
+
+        function clearSearch() {
+            document.getElementById('searchInput').value = '';
+            applyFilters();
+        }
+
+        /**
+         * ============================================================================
+         * HIỂN THỊ CÂU HỎI & XỬ LÝ CHỌN ĐÁP ÁN
+         * ============================================================================
+         */
+        function renderCurrentQuestion() {
+            const qCard = document.getElementById('questionCard');
+            const optionsContainer = document.getElementById('optionsContainer');
+            const explanationBox = document.getElementById('explanationBox');
+
+            if (filteredQuestions.length === 0) {
+                document.getElementById('qBadgeNumber').textContent = "Trống";
+                document.getElementById('qBadgeChapter').textContent = "-";
+                document.getElementById('qBadgeLevel').textContent = "-";
+                document.getElementById('qText').innerHTML = `
+                    <div class="text-center py-8 text-slate-500 dark:text-slate-400">
+                        <i class="ph-duotone ph-magnifying-glass text-4xl mb-2 block mx-auto"></i>
+                        <p>Không tìm thấy câu hỏi nào phù hợp với bộ lọc hiện tại.</p>
+                        <button onclick="resetFilters()" class="mt-3 px-4 py-2 rounded-xl bg-blue-600 text-white text-xs font-semibold">Xóa bộ lọc</button>
+                    </div>
+                `;
+                optionsContainer.innerHTML = '';
+                explanationBox.classList.add('hidden');
+                document.getElementById('progressCounter').textContent = '0 / 0';
+                document.getElementById('btnPrev').disabled = true;
+                document.getElementById('btnNext').disabled = true;
+                return;
+            }
+
+            const q = filteredQuestions[currentIndex];
+            const prog = userProgress[q.id] || {};
+            const selectedOption = currentMode === 'practice' ? prog.selected : examState.answers[q.id];
+            const isStarred = !!prog.starred;
+
+            // Cập nhật thông tin huy hiệu (Badges)
+            document.getElementById('qBadgeNumber').textContent = currentMode === 'practice' 
+                ? `Câu ${q.id}` 
+                : `Câu ${currentIndex + 1} (Mã #${q.id})`;
+            document.getElementById('qBadgeChapter').textContent = `Chương ${q.chapter}`;
+            
+            const levelEl = document.getElementById('qBadgeLevel');
+            levelEl.textContent = q.level || 'Nhận biết';
+            levelEl.className = 'px-2.5 py-1 rounded-lg font-semibold text-xs ' + getLevelBadgeStyle(q.level);
+
+            // Trạng thái nút đánh dấu sao
+            const starIcon = document.getElementById('starIcon');
+            const btnStar = document.getElementById('btnStarQuestion');
+            if (isStarred) {
+                starIcon.className = 'ph-fill ph-star text-lg text-amber-400';
+                btnStar.classList.add('text-amber-500', 'bg-amber-50', 'dark:bg-amber-900/30');
+            } else {
+                starIcon.className = 'ph-bold ph-star text-lg';
+                btnStar.classList.remove('text-amber-500', 'bg-amber-50', 'dark:bg-amber-900/30');
+            }
+
+            // Nội dung câu hỏi
+            document.getElementById('qText').textContent = q.question;
+
+            // Xác định xem có được phép hiện đáp án đúng/sai lúc này không
+            const revealResult = (currentMode === 'practice' && selectedOption !== undefined) || 
+                                 (currentMode === 'exam' && examState.isSubmitted);
+
+            // Render 4 phương án A, B, C, D
+            const letters = ['A', 'B', 'C', 'D'];
+            optionsContainer.innerHTML = q.options.map((optText, idx) => {
+                let cardStyle = 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/60 hover:border-blue-400 dark:hover:border-blue-500 hover:bg-blue-50/30 dark:hover:bg-slate-700/60';
+                let badgeStyle = 'bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300';
+                let statusIcon = '';
+
+                if (revealResult) {
+                    if (idx === q.answer) {
+                        // Đáp án đúng
+                        cardStyle = 'border-emerald-500 bg-emerald-50/90 dark:bg-emerald-950/50 dark:border-emerald-500 ring-1 ring-emerald-500';
+                        badgeStyle = 'bg-emerald-600 text-white';
+                        statusIcon = '<i class="ph-fill ph-check-circle text-emerald-600 dark:text-emerald-400 text-xl shrink-0"></i>';
+                    } else if (idx === selectedOption && selectedOption !== q.answer) {
+                        // Đáp án người dùng chọn bị sai
+                        cardStyle = 'border-rose-500 bg-rose-50/90 dark:bg-rose-950/50 dark:border-rose-500 ring-1 ring-rose-500';
+                        badgeStyle = 'bg-rose-600 text-white';
+                        statusIcon = '<i class="ph-fill ph-x-circle text-rose-600 dark:text-rose-400 text-xl shrink-0"></i>';
+                    } else {
+                        cardStyle = 'border-slate-200 dark:border-slate-700 opacity-60';
+                    }
+                } else if (selectedOption === idx) {
+                    // Đang thi thử và đã chọn (chưa nộp bài)
+                    cardStyle = 'border-blue-600 bg-blue-50/80 dark:bg-blue-950/50 dark:border-blue-500 ring-1 ring-blue-600';
+                    badgeStyle = 'bg-blue-600 text-white';
+                }
+
+                return `
+                    <button onclick="selectOption(${idx})" class="option-card w-full text-left p-3.5 sm:p-4 rounded-xl border-2 flex items-center justify-between gap-3 ${cardStyle}">
+                        <div class="flex items-start gap-3.5">
+                            <span class="w-7 h-7 rounded-lg font-bold text-xs sm:text-sm flex items-center justify-center shrink-0 mt-0.5 transition-colors ${badgeStyle}">
+                                ${letters[idx]}
+                            </span>
+                            <span class="text-sm sm:text-base font-medium leading-snug text-slate-800 dark:text-slate-100">
+                                ${escapeHTML(optText)}
+                            </span>
+                        </div>
+                        ${statusIcon}
+                    </button>
+                `;
+            }).join('');
+
+            // Hiển thị giải thích / ghi chú đáp án
+            if (revealResult) {
+                explanationBox.classList.remove('hidden');
+                const correctLetter = letters[q.answer];
+                const isUserRight = selectedOption === q.answer;
+                const statusText = selectedOption === undefined 
+                    ? '(Bạn chưa chọn đáp án)' 
+                    : (isUserRight ? '• Chính xác!' : '• Chưa chính xác!');
+                
+                document.getElementById('correctAnswerLabel').innerHTML = `Đáp án đúng: <span class="text-emerald-600 dark:text-emerald-400 font-extrabold">${correctLetter}</span> <span class="text-xs font-semibold ml-1 ${isUserRight ? 'text-emerald-600' : 'text-rose-500'}">${statusText}</span>`;
+                document.getElementById('explanationText').textContent = q.note || "Đối chiếu theo giáo trình Triết học Mác – Lênin (Hệ không chuyên) và tài liệu ôn tập BAS 123.";
+            } else {
+                explanationBox.classList.add('hidden');
+            }
+
+            // Cập nhật thanh điều hướng dưới thẻ
+            document.getElementById('progressCounter').textContent = `${currentIndex + 1} / ${filteredQuestions.length}`;
+            document.getElementById('btnPrev').disabled = currentIndex === 0;
+            document.getElementById('btnNext').disabled = currentIndex === filteredQuestions.length - 1;
+        }
+
+        function getLevelBadgeStyle(level) {
+            if (level === 'Vận dụng') return 'bg-purple-100 dark:bg-purple-900/40 text-purple-800 dark:text-purple-300';
+            if (level === 'Thông hiểu') return 'bg-sky-100 dark:bg-sky-900/40 text-sky-800 dark:text-sky-300';
+            return 'bg-amber-100 dark:bg-amber-900/40 text-amber-800 dark:text-amber-300';
+        }
+
+        function resetFilters() {
+            document.getElementById('filterChapter').value = 'ALL';
+            document.getElementById('filterLevel').value = 'ALL';
+            document.getElementById('filterStatus').value = 'ALL';
+            document.getElementById('searchInput').value = '';
+            applyFilters();
+        }
+
+        /**
+         * Xử lý khi người dùng chọn một phương án
+         */
+        function selectOption(optionIdx) {
+            if (filteredQuestions.length === 0) return;
+            const q = filteredQuestions[currentIndex];
+
+            if (currentMode === 'practice') {
+                if (!userProgress[q.id]) userProgress[q.id] = {};
+                userProgress[q.id].selected = optionIdx;
+                saveProgressToStorage();
+                renderCurrentQuestion();
+                renderQuestionPalette();
+            } else if (currentMode === 'exam') {
+                if (examState.isSubmitted) {
+                    showToast("Bài thi đã nộp, không thể thay đổi đáp án!", "info");
+                    return;
+                }
+                examState.answers[q.id] = optionIdx;
+                renderCurrentQuestion();
+                renderQuestionPalette();
+            }
+        }
+
+        function toggleStarCurrent() {
+            if (filteredQuestions.length === 0) return;
+            const q = filteredQuestions[currentIndex];
+            if (!userProgress[q.id]) userProgress[q.id] = {};
+            userProgress[q.id].starred = !userProgress[q.id].starred;
+            saveProgressToStorage();
+            renderCurrentQuestion();
+            renderQuestionPalette();
+        }
+
+        function prevQuestion() {
+            if (currentIndex > 0) {
+                currentIndex--;
+                renderCurrentQuestion();
+                renderQuestionPalette();
+            }
+        }
+
+        function nextQuestion() {
+            if (currentIndex < filteredQuestions.length - 1) {
+                currentIndex++;
+                renderCurrentQuestion();
+                renderQuestionPalette();
+            }
+        }
+
+        function jumpToQuestion(idx) {
+            if (idx >= 0 && idx < filteredQuestions.length) {
+                currentIndex = idx;
+                renderCurrentQuestion();
+                renderQuestionPalette();
+            }
+        }
+
+        /**
+         * ============================================================================
+         * BẢNG ĐIỀU HƯỚNG CÂU HỎI (QUESTION PALETTE)
+         * ============================================================================
+         */
+        function renderQuestionPalette() {
+            const grid = document.getElementById('questionPaletteGrid');
+            let answeredCount = 0;
+
+            grid.innerHTML = filteredQuestions.map((q, idx) => {
+                const prog = userProgress[q.id] || {};
+                const selected = currentMode === 'practice' ? prog.selected : examState.answers[q.id];
+                const isStarred = !!prog.starred;
+                const isCurrent = idx === currentIndex;
+
+                if (selected !== undefined) answeredCount++;
+
+                let btnClass = 'bg-slate-100 dark:bg-slate-700/70 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600';
+
+                if (currentMode === 'practice') {
+                    if (selected !== undefined) {
+                        btnClass = selected === q.answer 
+                            ? 'bg-emerald-500 text-white font-bold' 
+                            : 'bg-rose-500 text-white font-bold';
+                    }
+                } else {
+                    // Chế độ thi thử
+                    if (examState.isSubmitted) {
+                        if (selected === undefined) {
+                            btnClass = 'bg-slate-200 dark:bg-slate-700 text-slate-500';
+                        } else if (selected === q.answer) {
+                            btnClass = 'bg-emerald-500 text-white font-bold';
+                        } else {
+                            btnClass = 'bg-rose-500 text-white font-bold';
+                        }
+                    } else if (selected !== undefined) {
+                        btnClass = 'bg-blue-600 text-white font-bold';
+                    }
+                }
+
+                const ringClass = isCurrent ? 'ring-2 ring-offset-2 ring-blue-600 dark:ring-offset-slate-800' : '';
+                const starDot = isStarred ? `<span class="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-amber-400 border border-white dark:border-slate-800"></span>` : '';
+
+                const labelNumber = currentMode === 'practice' ? q.id : (idx + 1);
+
+                return `
+                    <button onclick="jumpToQuestion(${idx})" class="relative h-9 rounded-lg text-xs font-semibold transition-all flex items-center justify-center ${btnClass} ${ringClass}">
+                        ${labelNumber}
+                        ${starDot}
+                    </button>
+                `;
+            }).join('');
+
+            document.getElementById('paletteSummary').textContent = `Đã làm: ${answeredCount}/${filteredQuestions.length}`;
+        }
+
+        /**
+         * ============================================================================
+         * CHẾ ĐỘ THI THỬ (EXAM MODE) & BỘ ĐẾM THỜI GIAN
+         * ============================================================================
+         */
+        function switchMode(mode) {
+            if (mode === currentMode) return;
+
+            if (mode === 'exam') {
+                setupNewExamModal();
+            } else {
+                // Quay lại chế độ ôn tập
+                stopExamTimer();
+                currentMode = 'practice';
+                updateModeButtonsUI();
+                document.getElementById('filterBar').classList.remove('hidden');
+                document.getElementById('examBanner').classList.add('hidden');
+                document.getElementById('examResultCard').classList.add('hidden');
+                applyFilters();
+            }
+        }
+
+        function updateModeButtonsUI() {
+            const btnPractice = document.getElementById('btnModePractice');
+            const btnExam = document.getElementById('btnModeExam');
+
+            const activeClass = "px-3 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition-all bg-white dark:bg-slate-800 text-blue-600 dark:text-blue-400 shadow-sm flex items-center gap-1.5";
+            const inactiveClass = "px-3 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition-all text-slate-600 dark:text-slate-300 hover:text-slate-900 flex items-center gap-1.5";
+
+            if (currentMode === 'practice') {
+                btnPractice.className = activeClass;
+                btnExam.className = inactiveClass;
+            } else {
+                btnExam.className = activeClass;
+                btnPractice.className = inactiveClass;
+            }
+        }
+
+        function setupNewExamModal() {
+            document.getElementById('examSetupModal').classList.remove('hidden');
+        }
+
+        function startExam() {
+            closeModal('examSetupModal');
+            const chapter = document.getElementById('examChapterSelect').value;
+            const requestedCount = parseInt(document.getElementById('examCountSelect').value, 10);
+            const minutes = parseInt(document.getElementById('examTimeSelect').value, 10);
+
+            // Lọc nguồn câu hỏi theo chương
+            let pool = chapter === 'ALL' 
+                ? [...questionBank] 
+                : questionBank.filter(q => String(q.chapter) === chapter);
+
+            if (pool.length === 0) {
+                showToast("Không có câu hỏi nào trong chương đã chọn!", "error");
+                return;
+            }
+
+            // Xáo trộn Fisher-Yates
+            for (let i = pool.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [pool[i], pool[j]] = [pool[j], pool[i]];
+            }
+
+            const actualCount = Math.min(requestedCount, pool.length);
+            filteredQuestions = pool.slice(0, actualCount);
+            currentIndex = 0;
+            currentMode = 'exam';
+
+            examState = {
+                answers: {},
+                isSubmitted: false,
+                timerInterval: null,
+                secondsLeft: minutes * 60,
+                totalSeconds: minutes * 60
+            };
+
+            updateModeButtonsUI();
+            document.getElementById('filterBar').classList.add('hidden');
+            document.getElementById('examResultCard').classList.add('hidden');
+            document.getElementById('examBanner').classList.remove('hidden');
+            document.getElementById('btnSubmitExam').classList.remove('hidden');
+            document.getElementById('examInfoText').textContent = `Đề thi ${actualCount} câu • ${chapter === 'ALL' ? 'Tổng hợp 3 Chương' : 'Chương ' + chapter}`;
+
+            startExamTimer();
+            renderCurrentQuestion();
+            renderQuestionPalette();
+            showToast(`Bắt đầu bài thi ${actualCount} câu trong ${minutes} phút!`, "info");
+        }
+
+        function startExamTimer() {
+            stopExamTimer();
+            updateTimerDisplay();
+            examState.timerInterval = setInterval(() => {
+                examState.secondsLeft--;
+                updateTimerDisplay();
+                if (examState.secondsLeft <= 0) {
+                    stopExamTimer();
+                    submitExam(true);
+                }
+            }, 1000);
+        }
+
+        function stopExamTimer() {
+            if (examState.timerInterval) {
+                clearInterval(examState.timerInterval);
+                examState.timerInterval = null;
+            }
+        }
+
+        function updateTimerDisplay() {
+            const mins = Math.floor(Math.max(0, examState.secondsLeft) / 60);
+            const secs = Math.max(0, examState.secondsLeft) % 60;
+            const display = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+            const el = document.getElementById('timerDisplay');
+            el.textContent = display;
+
+            if (examState.secondsLeft <= 60) {
+                el.classList.add('text-rose-300', 'animate-pulse');
+            } else {
+                el.classList.remove('text-rose-300', 'animate-pulse');
+            }
+        }
+
+        function confirmSubmitExam() {
+            const answeredCount = Object.keys(examState.answers).length;
+            const total = filteredQuestions.length;
+            const msg = answeredCount < total 
+                ? `Bạn mới làm ${answeredCount}/${total} câu. Bạn có chắc chắn muốn nộp bài ngay bây giờ không?`
+                : `Bạn đã hoàn thành tất cả ${total} câu hỏi. Xác nhận nộp bài để xem điểm?`;
+
+            openConfirm("Nộp bài thi thử", msg, (ok) => {
+                if (ok) submitExam(false);
+            });
+        }
+
+        function submitExam(isAutoTimeOut) {
+            stopExamTimer();
+            examState.isSubmitted = true;
+            document.getElementById('btnSubmitExam').classList.add('hidden');
+
+            let correct = 0;
+            let wrong = 0;
+            let unanswered = 0;
+
+            filteredQuestions.forEach(q => {
+                const ans = examState.answers[q.id];
+                if (ans === undefined) {
+                    unanswered++;
+                } else if (ans === q.answer) {
+                    correct++;
+                } else {
+                    wrong++;
+                }
+            });
+
+            const total = filteredQuestions.length;
+            const score10 = ((correct / total) * 10).toFixed(2);
+            const timeUsed = examState.totalSeconds - examState.secondsLeft;
+            const usedMins = Math.floor(timeUsed / 60);
+            const usedSecs = timeUsed % 60;
+
+            document.getElementById('examScoreValue').textContent = score10;
+            document.getElementById('examResultTitle').textContent = isAutoTimeOut ? "Hết giờ làm bài!" : "Đã nộp bài thành công!";
+            document.getElementById('examResultSubtitle').textContent = `Bạn trả lời đúng ${correct}/${total} câu trong thời gian ${usedMins} phút ${usedSecs} giây.`;
+            document.getElementById('statCorrect').textContent = `Đúng: ${correct}`;
+            document.getElementById('statWrong').textContent = `Sai: ${wrong}`;
+            document.getElementById('statUnanswered').textContent = `Chưa làm: ${unanswered}`;
+
+            document.getElementById('examResultCard').classList.remove('hidden');
+            currentIndex = 0;
+            renderCurrentQuestion();
+            renderQuestionPalette();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        /**
+         * ============================================================================
+         * TRÌNH PHÂN TÍCH & NẠP DỮ LIỆU THÔNG MINH (SMART PARSER CHO 600 CÂU BAS 123)
+         * ============================================================================
+         */
+        function openImportModal() {
+            updateBankCountUI();
+            document.getElementById('importModal').classList.remove('hidden');
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).classList.add('hidden');
+        }
+
+        function handleFileUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                const content = e.target.result;
+                if (file.name.endsWith('.json')) {
+                    try {
+                        const parsed = JSON.parse(content);
+                        if (Array.isArray(parsed) && parsed.length > 0 && parsed[0].question) {
+                            questionBank = parsed;
+                            saveBankToStorage();
+                            applyFilters();
+                            closeModal('importModal');
+                            showToast(`Đã nạp thành công ${parsed.length} câu hỏi từ file JSON!`, "success");
+                        } else {
+                            showToast("Cấu trúc file JSON không hợp lệ!", "error");
+                        }
+                    } catch (err) {
+                        showToast("Lỗi đọc file JSON: " + err.message, "error");
+                    }
+                } else {
+                    document.getElementById('rawQuestionsInput').value = content;
+                    showToast("Đã tải nội dung file TXT vào ô nhập liệu!", "info");
+                }
+            };
+            reader.readAsText(file, 'UTF-8');
+            event.target.value = '';
+        }
+
+        function exportBankJSON() {
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(questionBank, null, 2));
+            const downloadAnchor = document.createElement('a');
+            downloadAnchor.setAttribute("href", dataStr);
+            downloadAnchor.setAttribute("download", `BAS123_NganHang_${questionBank.length}Cau.json`);
+            document.body.appendChild(downloadAnchor);
+            downloadAnchor.click();
+            downloadAnchor.remove();
+            showToast("Đã xuất file dữ liệu JSON!", "success");
+        }
+
+        function restoreDefaultBank() {
+            openConfirm("Khôi phục dữ liệu gốc", "Thao tác này sẽ đưa ngân hàng câu hỏi về 45 câu mẫu mặc định ban đầu. Bạn chắc chắn chứ?", (ok) => {
+                if (ok) {
+                    questionBank = [...DEFAULT_QUESTIONS];
+                    saveBankToStorage();
+                    applyFilters();
+                    showToast("Đã khôi phục bộ dữ liệu mặc định!", "info");
+                }
+            });
+        }
+
+        /**
+         * Phân tích cú pháp văn bản copy từ Word/PDF (hỗ trợ cả định dạng chuẩn của BAS 123)
+         */
+        function processSmartImport() {
+            const rawQ = document.getElementById('rawQuestionsInput').value.trim();
+            const rawA = document.getElementById('rawAnswersInput').value.trim();
+
+            if (!rawQ) {
+                showToast("Vui lòng dán nội dung câu hỏi vào ô bên trái!", "error");
+                return;
+            }
+
+            // Trường hợp dán trực tiếp mảng JSON
+            if (rawQ.startsWith('[')) {
+                try {
+                    const parsed = JSON.parse(rawQ);
+                    if (Array.isArray(parsed) && parsed.length > 0) {
+                        questionBank = parsed;
+                        saveBankToStorage();
+                        applyFilters();
+                        closeModal('importModal');
+                        showToast(`Đã nạp ${parsed.length} câu hỏi từ JSON!`, "success");
+                        return;
+                    }
+                } catch (e) {
+                    // Không phải JSON hợp lệ, chuyển sang parser văn bản
+                }
+            }
+
+            // 1. Phân tích bảng đáp án trước (hỗ trợ dạng: "1. A", "1-B", "Câu 1: C", hoặc bảng "1 A 2 B...")
+            const answerMap = {};
+            const noteMap = {};
+            if (rawA) {
+                const letterToIdx = { 'A': 0, 'B': 1, 'C': 2, 'D': 3 };
+                // Tìm tất cả cặp số câu và chữ cái đáp án A/B/C/D
+                const ansRegex = /(?:Câu\s*)?(\d{1,3})\s*[\.\:\-\)\s]\s*([A-D])\b([^\n\d]*)/gi;
+                let match;
+                while ((match = ansRegex.exec(rawA)) !== null) {
+                    const qNum = parseInt(match[1], 10);
+                    const ansChar = match[2].toUpperCase();
+                    const extraNote = match[3] ? match[3].replace(/^[\s\-\(\)]+|[\s\)]+$/g, '').trim() : '';
+                    if (letterToIdx[ansChar] !== undefined) {
+                        answerMap[qNum] = letterToIdx[ansChar];
+                        if (extraNote.length > 2) {
+                            noteMap[qNum] = extraNote;
+                        }
+                    }
+                }
+            }
+
+            // 2. Phân tích văn bản câu hỏi
+            // Tách theo mẫu "Câu 1:" hoặc "Câu 1." hoặc "1." đầu dòng
+            const blocks = rawQ.split(/(?=(?:^|\n)\s*(?:Câu\s*)?\d{1,3}\s*[\.\:])/i);
+            const parsedQuestions = [];
+            let currentChapter = 1;
+
+            blocks.forEach(block => {
+                const trimmed = block.trim();
+                if (!trimmed) return;
+
+                // Kiểm tra tiêu đề chương nếu người dùng copy cả tiêu đề chương
+                if (/CHƯƠNG\s*1|CHƯƠNG\s*I\b/i.test(trimmed)) currentChapter = 1;
+                if (/CHƯƠNG\s*2|CHƯƠNG\s*II\b/i.test(trimmed)) currentChapter = 2;
+                if (/CHƯƠNG\s*3|CHƯƠNG\s*III\b/i.test(trimmed)) currentChapter = 3;
+
+                // Trích xuất số câu và nội dung
+                const headerMatch = trimmed.match(/^(?:Câu\s*)?(\d{1,3})\s*[\.\:]\s*([\s\S]+)/i);
+                if (!headerMatch) return;
+
+                const qNum = parseInt(headerMatch[1], 10);
+                const body = headerMatch[2];
+
+                // Tự động phân chia chương theo cấu trúc 600 câu BAS 123 (1-150: Ch1, 151-400: Ch2, 401-600: Ch3) nếu chưa rõ
+                let inferredChapter = currentChapter;
+                if (qNum > 400) inferredChapter = 3;
+                else if (qNum > 150) inferredChapter = 2;
+
+                // Tách 4 phương án A, B, C, D
+                const optMatch = body.match(/([\s\S]*?)\n?\s*A[\.\)]\s*([\s\S]*?)\n?\s*B[\.\)]\s*([\s\S]*?)\n?\s*C[\.\)]\s*([\s\S]*?)\n?\s*D[\.\)]\s*([\s\S]*)/i);
+                if (optMatch) {
+                    const qText = optMatch[1].replace(/\s+/g, ' ').trim();
+                    const options = [
+                        optMatch[2].replace(/\s+/g, ' ').trim(),
+                        optMatch[3].replace(/\s+/g, ' ').trim(),
+                        optMatch[4].replace(/\s+/g, ' ').trim(),
+                        optMatch[5].replace(/\s+/g, ' ').trim()
+                    ];
+
+                    // Xác định đáp án: ưu tiên từ answerMap, nếu không có thì giữ từ bank cũ hoặc mặc định 0
+                    const existingQ = questionBank.find(item => item.id === qNum);
+                    const finalAns = answerMap[qNum] !== undefined 
+                        ? answerMap[qNum] 
+                        : (existingQ ? existingQ.answer : 0);
+
+                    parsedQuestions.push({
+                        id: qNum,
+                        chapter: inferredChapter,
+                        level: existingQ ? existingQ.level : (qNum % 3 === 0 ? "Vận dụng" : (qNum % 2 === 0 ? "Thông hiểu" : "Nhận biết")),
+                        question: qText,
+                        options: options,
+                        answer: finalAns,
+                        note: noteMap[qNum] || (existingQ ? existingQ.note : "Đáp án đối chiếu theo tài liệu ôn tập BAS 123.")
+                    });
+                }
+            });
+
+            if (parsedQuestions.length === 0) {
+                showToast("Không nhận diện được định dạng câu hỏi. Hãy đảm bảo mỗi câu có dạng 'Câu 1: ... A. ... B. ... C. ... D. ...'", "error");
+                return;
+            }
+
+            // Gộp hoặc cập nhật vào ngân hàng câu hỏi hiện có
+            const bankMap = new Map();
+            questionBank.forEach(q => bankMap.set(q.id, q));
+            parsedQuestions.forEach(q => bankMap.set(q.id, q));
+
+            questionBank = Array.from(bankMap.values()).sort((a, b) => a.id - b.id);
+            saveBankToStorage();
+            applyFilters();
+            closeModal('importModal');
+            showToast(`Đã phân tích và cập nhật thành công ${parsedQuestions.length} câu hỏi! Tổng cộng: ${questionBank.length} câu.`, "success");
+        }
+
+        function resetProgress() {
+            openConfirm("Xóa lịch sử làm bài", "Bạn có muốn xóa toàn bộ đáp án đã chọn và dấu sao trong chế độ Ôn tập để làm lại từ đầu không?", (ok) => {
+                if (ok) {
+                    userProgress = {};
+                    saveProgressToStorage();
+                    applyFilters();
+                    showToast("Đã đặt lại toàn bộ tiến độ ôn tập!", "info");
+                }
+            });
+        }
+
+        /**
+         * ============================================================================
+         * TIỆN ÍCH GIAO DIỆN: TOAST, CONFIRM MODAL, PHÍM TẮT
+         * ============================================================================
+         */
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            
+            const colors = {
+                success: 'bg-emerald-600 text-white',
+                error: 'bg-rose-600 text-white',
+                info: 'bg-slate-800 dark:bg-slate-700 text-white'
+            };
+
+            const icons = {
+                success: 'ph-check-circle',
+                error: 'ph-warning-circle',
+                info: 'ph-info'
+            };
+
+            toast.className = `pointer-events-auto flex items-center gap-2.5 px-4 py-3 rounded-xl shadow-lg text-xs sm:text-sm font-medium transition-all duration-300 transform translate-y-2 opacity-0 ${colors[type] || colors.info}`;
+            toast.innerHTML = `<i class="ph-fill ${icons[type] || icons.info} text-lg shrink-0"></i><span>${escapeHTML(message)}</span>`;
+            
+            container.appendChild(toast);
+            requestAnimationFrame(() => {
+                toast.classList.remove('translate-y-2', 'opacity-0');
+            });
+
+            setTimeout(() => {
+                toast.classList.add('translate-y-2', 'opacity-0');
+                setTimeout(() => toast.remove(), 300);
+            }, 3500);
+        }
+
+        function openConfirm(title, message, callback) {
+            document.getElementById('confirmTitle').textContent = title;
+            document.getElementById('confirmMessage').textContent = message;
+            confirmCallback = callback;
+            document.getElementById('confirmDialog').classList.remove('hidden');
+        }
+
+        function closeConfirm(result) {
+            document.getElementById('confirmDialog').classList.add('hidden');
+            if (confirmCallback) {
+                confirmCallback(result);
+                confirmCallback = null;
+            }
+        }
+
+        function escapeHTML(str) {
+            return String(str)
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+
+        function setupKeyboardShortcuts() {
+            document.addEventListener('keydown', (e) => {
+                // Bỏ qua nếu đang nhập liệu trong ô input hoặc textarea
+                if (['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement.tagName)) return;
+
+                if (e.key === 'ArrowRight') {
+                    nextQuestion();
+                } else if (e.key === 'ArrowLeft') {
+                    prevQuestion();
+                } else if (['1', 'a', 'A'].includes(e.key)) {
+                    selectOption(0);
+                } else if (['2', 'b', 'B'].includes(e.key)) {
+                    selectOption(1);
+                } else if (['3', 'c', 'C'].includes(e.key)) {
+                    selectOption(2);
+                } else if (['4', 'd', 'D'].includes(e.key)) {
+                    selectOption(3);
+                }
+            });
+        }
+    </script>
+</body>
+</html>
